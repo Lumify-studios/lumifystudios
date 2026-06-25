@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Lumify Studios – Bringing Creativity Into Digital Reality</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>emailjs.init('GxstzTU3syo3d2ht_');</script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -189,106 +187,6 @@
     .why-wrap { gap: 2rem; }
   }
 
-  /* ── LUMI CHAT WIDGET ── */
-  #lumi-btn {
-    position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
-    width: 60px; height: 60px; border-radius: 50%;
-    background: var(--brand-gradient);
-    border: none; cursor: pointer;
-    box-shadow: 0 4px 24px rgba(139,92,246,0.4);
-    display: flex; align-items: center; justify-content: center;
-    transition: transform 0.2s, box-shadow 0.2s;
-    font-size: 1.5rem;
-  }
-  #lumi-btn:hover { transform: scale(1.08); box-shadow: 0 6px 32px rgba(139,92,246,0.6); }
-  #lumi-btn .lumi-badge {
-    position: absolute; top: -4px; right: -4px;
-    width: 18px; height: 18px; border-radius: 50%;
-    background: #22c55e; border: 2px solid var(--off-black);
-    font-size: 0; animation: pulse 2s ease-in-out infinite;
-  }
-
-  #lumi-panel {
-    position: fixed; bottom: 6rem; right: 2rem; z-index: 998;
-    width: 360px; max-height: 560px;
-    background: #161616; border: 1px solid rgba(139,92,246,0.25);
-    border-radius: 20px; display: flex; flex-direction: column;
-    overflow: hidden; box-shadow: 0 16px 64px rgba(0,0,0,0.6);
-    transform: translateY(20px) scale(0.95); opacity: 0;
-    pointer-events: none; transition: opacity 0.25s, transform 0.25s;
-  }
-  #lumi-panel.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
-
-  .lumi-header {
-    display: flex; align-items: center; gap: 0.75rem;
-    padding: 1rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.06);
-    background: #1a1a1a;
-  }
-  .lumi-avatar {
-    width: 38px; height: 38px; border-radius: 50%;
-    background: var(--brand-gradient);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem; flex-shrink: 0;
-  }
-  .lumi-header-info { flex: 1; }
-  .lumi-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; }
-  .lumi-status { font-size: 0.72rem; color: #22c55e; display: flex; align-items: center; gap: 0.3rem; }
-  .lumi-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #22c55e; display: inline-block; }
-  .lumi-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.2rem; padding: 0.2rem; transition: color 0.2s; }
-  .lumi-close:hover { color: var(--white); }
-
-  .lumi-messages {
-    flex: 1; overflow-y: auto; padding: 1rem 1.25rem;
-    display: flex; flex-direction: column; gap: 0.75rem;
-    scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent;
-  }
-  .lumi-messages::-webkit-scrollbar { width: 4px; }
-  .lumi-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
-
-  .msg { max-width: 85%; font-size: 0.875rem; line-height: 1.55; padding: 0.65rem 0.95rem; border-radius: 14px; animation: fadeUp 0.2s ease; }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-  .msg.lumi { background: #222; color: var(--white); border-bottom-left-radius: 4px; align-self: flex-start; }
-  .msg.user { background: var(--purple); color: #fff; border-bottom-right-radius: 4px; align-self: flex-end; }
-
-  .lumi-typing { display: flex; gap: 4px; align-items: center; padding: 0.65rem 0.95rem; background: #222; border-radius: 14px; border-bottom-left-radius: 4px; align-self: flex-start; width: fit-content; }
-  .lumi-typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: dot 1.2s ease-in-out infinite; }
-  .lumi-typing span:nth-child(2) { animation-delay: 0.2s; }
-  .lumi-typing span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes dot { 0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
-
-  .lumi-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0 1.25rem 0.75rem; }
-  .chip {
-    background: var(--accent-dim); color: var(--accent-light);
-    border: 1px solid rgba(139,92,246,0.3); border-radius: 100px;
-    padding: 0.35rem 0.85rem; font-size: 0.78rem; cursor: pointer;
-    transition: background 0.15s, border-color 0.15s; white-space: nowrap;
-  }
-  .chip:hover { background: rgba(139,92,246,0.2); border-color: rgba(139,92,246,0.6); }
-
-  .lumi-input-row {
-    display: flex; gap: 0.5rem; padding: 0.75rem 1.25rem 1rem;
-    border-top: 1px solid rgba(255,255,255,0.06);
-  }
-  #lumi-input {
-    flex: 1; background: #222; border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 100px; padding: 0.6rem 1rem; color: var(--white);
-    font-family: 'Inter', sans-serif; font-size: 0.875rem; outline: none;
-    transition: border-color 0.2s;
-  }
-  #lumi-input::placeholder { color: var(--muted); }
-  #lumi-input:focus { border-color: rgba(139,92,246,0.5); }
-  #lumi-send {
-    width: 38px; height: 38px; border-radius: 50%; background: var(--purple);
-    border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: background 0.2s; flex-shrink: 0;
-  }
-  #lumi-send:hover { background: var(--purple-light); }
-  #lumi-send svg { width: 16px; height: 16px; fill: white; }
-
-  @media (max-width: 420px) {
-    #lumi-panel { width: calc(100vw - 2rem); right: 1rem; bottom: 5.5rem; }
-    #lumi-btn { right: 1rem; bottom: 1rem; }
-  }
 </style>
 </head>
 <body>
@@ -398,7 +296,7 @@
   <div class="contact-wrap">
     <div class="section-label" style="margin-bottom:1rem;">Let's talk</div>
     <h2 class="section-title">Ready to grow your business?</h2>
-    <p style="color:var(--muted);max-width:42ch;margin:1rem auto 0;font-weight:300;">Call us, drop an email, find us on Instagram, or chat with Lumi below to book an appointment right now.</p>
+    <p style="color:var(--muted);max-width:42ch;margin:1rem auto 0;font-weight:300;">Call us, drop an email, or find us on Instagram to book an appointment.</p>
     <div class="contact-links">
       <a class="contact-link" href="tel:+15138989727">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
@@ -426,171 +324,10 @@
   <p>© 2026 Lumify Studios. All rights reserved.</p>
 </footer>
 
-<!-- ── LUMI CHAT WIDGET ── -->
-<button id="lumi-btn" aria-label="Chat with Lumi">
-  ✨
-  <span class="lumi-badge"></span>
-</button>
 
-<div id="lumi-panel" role="dialog" aria-label="Chat with Lumi">
-  <div class="lumi-header">
-    <div class="lumi-avatar">✨</div>
-    <div class="lumi-header-info">
-      <div class="lumi-name">Lumi</div>
-      <div class="lumi-status">Online · Lumify Studios AI</div>
-    </div>
-    <button class="lumi-close" id="lumi-close-btn" aria-label="Close chat">✕</button>
-  </div>
-  <div class="lumi-messages" id="lumi-messages"></div>
-  <div class="lumi-chips" id="lumi-chips"></div>
-  <div class="lumi-input-row">
-    <input id="lumi-input" type="text" placeholder="Type a message…" autocomplete="off" />
-    <button id="lumi-send" aria-label="Send">
-      <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
-    </button>
-  </div>
-</div>
 
-<script>
-(function () {
-  const btn = document.getElementById('lumi-btn');
-  const panel = document.getElementById('lumi-panel');
-  const closeBtn = document.getElementById('lumi-close-btn');
-  const msgBox = document.getElementById('lumi-messages');
-  const chipsBox = document.getElementById('lumi-chips');
-  const input = document.getElementById('lumi-input');
-  const sendBtn = document.getElementById('lumi-send');
 
-  let isOpen = false;
-  let started = false;
 
-  // Booking data collected step by step
-  let step = 0;
-  let booking = { service: '', name: '', contact: '', time: '', project: '' };
 
-  function toggle() {
-    isOpen = !isOpen;
-    panel.classList.toggle('open', isOpen);
-    if (isOpen && !started) { started = true; initChat(); }
-    if (isOpen) setTimeout(() => input.focus(), 300);
-  }
-
-  btn.addEventListener('click', toggle);
-  closeBtn.addEventListener('click', toggle);
-
-  function addMsg(role, text) {
-    const div = document.createElement('div');
-    div.className = 'msg ' + (role === 'lumi' ? 'lumi' : 'user');
-    div.textContent = text;
-    msgBox.appendChild(div);
-    msgBox.scrollTop = msgBox.scrollHeight;
-  }
-
-  function showTyping(cb) {
-    const el = document.createElement('div');
-    el.className = 'lumi-typing';
-    el.innerHTML = '<span></span><span></span><span></span>';
-    msgBox.appendChild(el);
-    msgBox.scrollTop = msgBox.scrollHeight;
-    setTimeout(() => { el.remove(); cb(); }, 800);
-  }
-
-  function setChips(chips) {
-    chipsBox.innerHTML = '';
-    chips.forEach(c => {
-      const b = document.createElement('button');
-      b.className = 'chip'; b.textContent = c;
-      b.addEventListener('click', () => sendMessage(c));
-      chipsBox.appendChild(b);
-    });
-  }
-
-  function lumiSay(text, chips) {
-    showTyping(() => {
-      addMsg('lumi', text);
-      setChips(chips || []);
-    });
-  }
-
-  function handleStep(msg) {
-    const lower = msg.toLowerCase();
-    input.disabled = true; sendBtn.disabled = true;
-
-    if (step === 0) {
-      // Service
-      booking.service = msg;
-      step = 1;
-      lumiSay("Love it! What's your name? 😊");
-    } else if (step === 1) {
-      // Name
-      booking.name = msg;
-      step = 2;
-      lumiSay("Nice to meet you, " + booking.name + "! What's the best way to reach you — phone or email?", ['Phone', 'Email']);
-    } else if (step === 2) {
-      // Contact method
-      booking.contact = msg;
-      step = 3;
-      lumiSay("Got it! What's your " + (lower.includes('phone') ? 'phone number' : 'email address') + "?");
-    } else if (step === 3) {
-      // Contact details
-      booking.contactDetail = msg;
-      step = 4;
-      lumiSay("Perfect! When would you like to schedule your call? We're available Mon–Fri 10am–2pm and Sat–Sun anytime.", ['Weekday 10am', 'Weekday 1pm', 'Saturday', 'Sunday']);
-    } else if (step === 4) {
-      // Time
-      booking.time = msg;
-      step = 5;
-      lumiSay("Almost done! Give me a quick description of your business or project.");
-    } else if (step === 5) {
-      // Project
-      booking.project = msg;
-      step = 6;
-      const summary = "Here's your booking summary:\n\n" +
-        "👤 Name: " + booking.name + "\n" +
-        "🛠 Service: " + booking.service + "\n" +
-        "📞 Contact: " + booking.contactDetail + "\n" +
-        "🗓 Preferred time: " + booking.time + "\n" +
-        "💼 Project: " + booking.project + "\n\n" +
-        "Someone from the Lumify team will reach out to confirm soon. Thanks and can't wait to work with you! — Lumi ✨";
-      lumiSay(summary);
-
-      // Send email via EmailJS
-      emailjs.send('service_eci1cok', 'template_jq6plmt', {
-        title: 'New Booking via Lumi Chat',
-        name: booking.name,
-        message:
-          "Service: " + booking.service + "\n" +
-          "Contact: " + booking.contactDetail + "\n" +
-          "Preferred Time: " + booking.time + "\n" +
-          "Project: " + booking.project,
-        email: 'contact.lumifystudios@gmail.com'
-      }).catch(() => {});
-    } else {
-      lumiSay("Your booking is all set! Feel free to call us at 513-898-9727 or email contact.lumifystudios@gmail.com if you need anything. 😊");
-    }
-
-    setTimeout(() => { input.disabled = false; sendBtn.disabled = false; input.focus(); }, 900);
-  }
-
-  function sendMessage(text) {
-    const msg = (text || input.value).trim();
-    if (!msg) return;
-    input.value = '';
-    setChips([]);
-    addMsg('user', msg);
-    handleStep(msg);
-  }
-
-  function initChat() {
-    setTimeout(() => {
-      addMsg('lumi', "Hey there! 👋 I'm Lumi, your Lumify Studios appointment specialist. I'm here to help you book a call with our team — it's quick and free. Are you looking for a website, a poster, or both?");
-      setChips(['Website', 'Poster', 'Both']);
-    }, 400);
-  }
-
-  sendBtn.addEventListener('click', () => sendMessage());
-  input.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
-})();
-</script>
 </body>
 </html>
