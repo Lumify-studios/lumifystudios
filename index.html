@@ -463,23 +463,10 @@
 
   let isOpen = false;
   let started = false;
-  let history = [];
 
-  const SYSTEM = `You are Lumi, a friendly and professional AI appointment specialist for Lumify Studios — a creative studio that designs ONLY websites and posters for small businesses. Do not mention or imply any other services. Your slogan is "Bringing creativity into digital reality."
-
-Business hours for calls: Monday–Friday 10am–2pm, and Saturday–Sunday any time. Phone: 513-898-9727. Email: contact.lumifystudios@gmail.com.
-
-Your only job is to help visitors book a discovery call or appointment with the Lumify Studios team. Be warm, concise, and encouraging. Keep responses short (2–4 sentences max).
-
-Follow this flow:
-1. Greet the visitor and ask what they need: a website, a poster, or both.
-2. Ask for their name.
-3. Ask for the best way to reach them (phone or email).
-4. Ask for their preferred date and time for a call, reminding them of the hours above (weekdays 10am–2pm, weekends any time).
-5. Ask for a brief description of their project or business.
-6. Confirm all details back to them in a neat summary and tell them someone from the Lumify team will reach out to confirm. Wish them well.
-
-If someone asks something unrelated to booking or Lumify's two services, kindly redirect them back to scheduling. Always be upbeat and professional. Sign off only the final confirmation message as "— Lumi ✨".`;
+  // Booking data collected step by step
+  let step = 0;
+  let booking = { service: '', name: '', contact: '', time: '', project: '' };
 
   function toggle() {
     isOpen = !isOpen;
@@ -499,18 +486,13 @@ If someone asks something unrelated to booking or Lumify's two services, kindly 
     msgBox.scrollTop = msgBox.scrollHeight;
   }
 
-  function showTyping() {
+  function showTyping(cb) {
     const el = document.createElement('div');
-    el.className = 'lumi-typing'; el.id = 'lumi-typing';
+    el.className = 'lumi-typing';
     el.innerHTML = '<span></span><span></span><span></span>';
     msgBox.appendChild(el);
     msgBox.scrollTop = msgBox.scrollHeight;
-    return el;
-  }
-
-  function removeTyping() {
-    const el = document.getElementById('lumi-typing');
-    if (el) el.remove();
+    setTimeout(() => { el.remove(); cb(); }, 800);
   }
 
   function setChips(chips) {
@@ -518,62 +500,76 @@ If someone asks something unrelated to booking or Lumify's two services, kindly 
     chips.forEach(c => {
       const b = document.createElement('button');
       b.className = 'chip'; b.textContent = c;
-      b.addEventListener('click', () => { sendMessage(c); });
+      b.addEventListener('click', () => sendMessage(c));
       chipsBox.appendChild(b);
     });
   }
 
-  async function lumiReply(userMsg) {
-    history.push({ role: 'user', content: userMsg });
-    const typing = showTyping();
+  function lumiSay(text, chips) {
+    showTyping(() => {
+      addMsg('lumi', text);
+      setChips(chips || []);
+    });
+  }
+
+  function handleStep(msg) {
+    const lower = msg.toLowerCase();
     input.disabled = true; sendBtn.disabled = true;
 
-    try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 1000,
-          system: SYSTEM,
-          messages: history
-        })
-      });
-      const data = await res.json();
-      const reply = data.content && data.content[0] ? data.content[0].text : "I'm having a little trouble right now — please call 513-898-9727 or email contact.lumifystudios@gmail.com and we'll get back to you!";
-      removeTyping();
-      addMsg('lumi', reply);
-      history.push({ role: 'assistant', content: reply });
+    if (step === 0) {
+      // Service
+      booking.service = msg;
+      step = 1;
+      lumiSay("Love it! What's your name? 😊");
+    } else if (step === 1) {
+      // Name
+      booking.name = msg;
+      step = 2;
+      lumiSay("Nice to meet you, " + booking.name + "! What's the best way to reach you — phone or email?", ['Phone', 'Email']);
+    } else if (step === 2) {
+      // Contact method
+      booking.contact = msg;
+      step = 3;
+      lumiSay("Got it! What's your " + (lower.includes('phone') ? 'phone number' : 'email address') + "?");
+    } else if (step === 3) {
+      // Contact details
+      booking.contactDetail = msg;
+      step = 4;
+      lumiSay("Perfect! When would you like to schedule your call? We're available Mon–Fri 10am–2pm and Sat–Sun anytime.", ['Weekday 10am', 'Weekday 1pm', 'Saturday', 'Sunday']);
+    } else if (step === 4) {
+      // Time
+      booking.time = msg;
+      step = 5;
+      lumiSay("Almost done! Give me a quick description of your business or project.");
+    } else if (step === 5) {
+      // Project
+      booking.project = msg;
+      step = 6;
+      const summary = "Here's your booking summary:\n\n" +
+        "👤 Name: " + booking.name + "\n" +
+        "🛠 Service: " + booking.service + "\n" +
+        "📞 Contact: " + booking.contactDetail + "\n" +
+        "🗓 Preferred time: " + booking.time + "\n" +
+        "💼 Project: " + booking.project + "\n\n" +
+        "Someone from the Lumify team will reach out to confirm soon. Thanks and can't wait to work with you! — Lumi ✨";
+      lumiSay(summary);
 
-      const lower = reply.toLowerCase();
-      if (lower.includes('website') && lower.includes('poster') && lower.includes('both')) {
-        setChips(['Website', 'Poster', 'Both']);
-      } else if (lower.includes('reach you') || lower.includes('phone or email') || lower.includes('best way')) {
-        setChips(['Phone', 'Email']);
-      } else if (lower.includes('date') || lower.includes('time') || lower.includes('hours')) {
-        setChips(['Weekday 10am', 'Weekday 1pm', 'Saturday', 'Sunday']);
-      } else if (lower.includes('confirm') || lower.includes('summary')) {
-        setChips(['That looks great!', 'I need to change something']);
-      } else {
-        setChips([]);
-      }
-
-      // Send email when Lumi signs off with confirmation (— Lumi ✨)
-      if (reply.includes('— Lumi')) {
-        emailjs.send('service_eci1cok', 'template_jq6plmt', {
-          title: 'New Booking via Lumi Chat',
-          name: 'Lumi Chat',
-          message: reply,
-          email: 'contact.lumifystudios@gmail.com'
-        }).catch(() => {});
-      }
-    } catch (e) {
-      removeTyping();
-      addMsg('lumi', "Oops — something went wrong on my end. You can always reach us at 513-898-9727 or contact.lumifystudios@gmail.com!");
-      setChips([]);
+      // Send email via EmailJS
+      emailjs.send('service_eci1cok', 'template_jq6plmt', {
+        title: 'New Booking via Lumi Chat',
+        name: booking.name,
+        message:
+          "Service: " + booking.service + "\n" +
+          "Contact: " + booking.contactDetail + "\n" +
+          "Preferred Time: " + booking.time + "\n" +
+          "Project: " + booking.project,
+        email: 'contact.lumifystudios@gmail.com'
+      }).catch(() => {});
+    } else {
+      lumiSay("Your booking is all set! Feel free to call us at 513-898-9727 or email contact.lumifystudios@gmail.com if you need anything. 😊");
     }
-    input.disabled = false; sendBtn.disabled = false;
-    input.focus();
+
+    setTimeout(() => { input.disabled = false; sendBtn.disabled = false; input.focus(); }, 900);
   }
 
   function sendMessage(text) {
@@ -582,7 +578,7 @@ If someone asks something unrelated to booking or Lumify's two services, kindly 
     input.value = '';
     setChips([]);
     addMsg('user', msg);
-    lumiReply(msg);
+    handleStep(msg);
   }
 
   function initChat() {
